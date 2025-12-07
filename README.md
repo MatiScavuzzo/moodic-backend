@@ -337,7 +337,3 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 ---
 
 ⭐ Si te gusta este proyecto, dale una estrella en GitHub!
-
-```
-
-```
