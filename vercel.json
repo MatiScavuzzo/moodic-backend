@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "bunVersion": "1.x",
+  "devCommand": "bun --watch src/index.ts",
+  "installCommand": "bun install"
+}
