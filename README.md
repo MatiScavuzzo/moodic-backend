@@ -282,8 +282,6 @@ Asegúrate de actualizar:
 
 Los límites se resetean automáticamente después de la ventana de tiempo.
 
-```
-
 ## 📝 Estructura del Proyecto
 
 ```
@@ -339,5 +337,7 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 ---
 
 ⭐ Si te gusta este proyecto, dale una estrella en GitHub!
+
+```
 
 ```
