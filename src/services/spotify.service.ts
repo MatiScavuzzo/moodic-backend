@@ -1,3 +1,4 @@
+import { shuffle } from './../utils/shuffle';
 import { LLMResponse } from '../schema/llmResponse.schema';
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID as string;
@@ -80,7 +81,7 @@ async function getSpotifySearchPlaylists(token: string, moodic: LLMResponse) {
     // Combinar géneros del moodic con los del usuario (priorizando los del usuario)
     const combinedGenres =
       userGenres.length > 0
-        ? [...userGenres.slice(0, 2), ...moodic.genres].slice(0, 5) // Mezclar géneros del usuario con los del moodic
+        ? shuffle([...moodic.genres, ...userGenres.slice(0, 2)]).slice(0, 5) // Mezclar géneros del usuario con los del moodic
         : moodic.genres;
 
     const query = `${moodic.keywords.join(', ')} ${combinedGenres.join(', ')} ${

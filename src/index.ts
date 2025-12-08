@@ -29,7 +29,7 @@ function getLocalIP(): string | null {
 
 // Configuración de entorno
 const isProduction = process.env.NODE_ENV === 'production';
-const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 const localIP = getLocalIP();
 
 // Orígenes permitidos para CORS
@@ -37,6 +37,7 @@ const allowedOrigins = isProduction
   ? [
       'https://moodic.com.ar',
       'https://www.moodic.com.ar',
+      'http://127.0.0.1:5173',
       // Agregar aquí otros dominios si los tienes (ej: app.moodic.com.ar)
     ]
   : [
@@ -58,7 +59,9 @@ const app = new Elysia()
         }
         // En producción, verificar contra la lista de orígenes permitidos
         const origin = request.headers.get('origin');
-        if (!origin) return false;
+        // Si no hay origin, es una petición del servidor (no del navegador)
+        // Permitir estas peticiones ya que no tienen problemas de CORS
+        if (!origin) return true;
         return allowedOrigins.includes(origin);
       },
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
