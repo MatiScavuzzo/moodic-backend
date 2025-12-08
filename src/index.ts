@@ -246,8 +246,28 @@ const app = new Elysia()
     }
 
     const token = authHeader.replace('Bearer ', '');
-    const user = await getSpotifyUser(token);
-    return user;
+
+    try {
+      const user = await getSpotifyUser(token);
+      return new Response(JSON.stringify(user), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (error) {
+      console.error('Error en /me:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
+      return new Response(
+        JSON.stringify({
+          error: 'Error al obtener usuario de Spotify',
+          details: errorMessage,
+        }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
   })
   .get('/login', async () => {
     const { url } = loginSpotify();

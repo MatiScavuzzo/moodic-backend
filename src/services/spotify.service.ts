@@ -102,7 +102,6 @@ async function getSpotifySearchPlaylists(token: string, moodic: LLMResponse) {
       },
     });
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.error('Ocurrió un error al buscar playlists en Spotify:', error);
@@ -117,6 +116,28 @@ async function getSpotifyUser(token: string) {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    // Verificar que la respuesta sea exitosa
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error de Spotify API:', response.status, errorText);
+      throw new Error(
+        `Spotify API error: ${response.status} - ${errorText.substring(0, 200)}`
+      );
+    }
+
+    // Verificar que el Content-Type sea JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error(
+        'Respuesta no es JSON:',
+        contentType,
+        text.substring(0, 200)
+      );
+      throw new Error('La respuesta de Spotify no es JSON válido');
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -166,7 +187,31 @@ async function getSpotifyAccessToken(code: string, state: string) {
       },
       body: `grant_type=authorization_code&code=${code}&redirect_uri=${SPOTIFY_REDIRECT_URI}&state=${state}`,
     });
+
+    // Verificar que la respuesta sea exitosa
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        'Error de Spotify al obtener token:',
+        response.status,
+        errorText
+      );
+      throw new Error(
+        `Spotify token error: ${response.status} - ${errorText.substring(
+          0,
+          200
+        )}`
+      );
+    }
+
     const data = await response.json();
+
+    // Verificar que se recibieron los tokens necesarios
+    if (!data.access_token) {
+      console.error('Spotify no devolvió access_token:', data);
+      throw new Error('Spotify no devolvió un token de acceso válido');
+    }
+
     return data;
   } catch (error) {
     console.error('Error al obtener el acceso a Spotify:', error);
@@ -187,7 +232,32 @@ async function refreshSpotifyToken(refreshToken: string) {
       },
       body: `grant_type=refresh_token&refresh_token=${refreshToken}`,
     });
+
+    // Verificar que la respuesta sea exitosa
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        'Error de Spotify al renovar token:',
+        response.status,
+        errorText
+      );
+      throw new Error(
+        `Spotify refresh token error: ${
+          response.status
+        } - ${errorText.substring(0, 200)}`
+      );
+    }
+
     const data = await response.json();
+
+    // Verificar que se recibió el access_token
+    if (!data.access_token) {
+      console.error('Spotify no devolvió access_token al renovar:', data);
+      throw new Error(
+        'Spotify no devolvió un token de acceso válido al renovar'
+      );
+    }
+
     return data;
   } catch (error) {
     console.error('Error al renovar el token de Spotify:', error);
